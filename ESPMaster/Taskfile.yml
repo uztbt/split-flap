@@ -1,0 +1,10 @@
+version: 3
+
+tasks:
+  build:
+    cmds:
+      - arduino-cli compile --fqbn esp8266:esp8266:generic --build-property compiler.cpp.extra_flags=-Dserial --output-dir ./out .
+  upload:
+    cmds:
+      - arduino-cli upload -p /dev/tty.usbserial-21130 --fqbn esp8266:esp8266:generic --input-dir ./out
+  
