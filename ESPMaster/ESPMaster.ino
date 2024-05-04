@@ -12,30 +12,6 @@
 #include <WiFiUdp.h>
 #include <ezTime.h>
 
-
-#define BAUDRATE 115200
-#define ANSWERSIZE 1 //Size of unit's request answer
-#define UNITSAMOUNT 10 //Amount of connected units !IMPORTANT!
-#define FLAPAMOUNT 45 //Amount of Flaps in each unit
-#define MINSPEED 1 //min Speed
-#define MAXSPEED 12 //max Speed
-#define ESPLED 1 //Blue LED on ESP01
-//#define serial //uncomment for serial debug messages, no serial messages if this whole line is a comment!
-
-// REPLACE WITH YOUR NETWORK CREDENTIALS
-const char* ssid = "SSID";
-const char* password = "12345678901234567890";
-
-// Change this to your timezone, use the TZ database name
-// https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
-String timezoneString = "Europe/Berlin";
-
-// If you want to have a different date or clock format change these two
-// Complete table with every char: https://github.com/ropg/ezTime#getting-date-and-time
-String dateFormat = "d.m.Y"; //Examples: d.m.Y -> 11.09.2021, D M y -> SAT SEP 21
-String clockFormat = "H:i"; // Examples: H:i -> 21:19, h:ia -> 09:19PM
-
-
 const char letters[] = {' ', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', '$', '&', '#', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', ':', '.', '-', '?', '!'};
 int displayState[UNITSAMOUNT];
 String writtenLast;
@@ -85,7 +61,7 @@ void setup() {
 
   //ezTime initialization
   waitForSync();
-  timezone.setLocation(timezoneString);
+  timezone.setLocation(TIMEZONE_STRING);
 
   // Web Server Root URL
   server.on("/", HTTP_GET, [](AsyncWebServerRequest * request) {

@@ -1,7 +1,7 @@
 void showDate() {
-  showNewData(timezone.dateTime(dateFormat));
+  showNewData(timezone.dateTime(DATE_FORMAT));
 }
 
 void showClock() {
-  showNewData(timezone.dateTime(clockFormat));
+  showNewData(timezone.dateTime(CLOCK_FORMAT));
 }

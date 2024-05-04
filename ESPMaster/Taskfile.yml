@@ -2,8 +2,27 @@ version: 3
 
 tasks:
   build:
+    dotenv: ['.env']
     cmds:
-      - arduino-cli compile --fqbn esp8266:esp8266:generic --build-property compiler.cpp.extra_flags=-Dserial --output-dir ./out .
+      - rm -rf ./out
+      - echo ${WIFI_SSID}
+      - arduino-cli compile --fqbn esp8266:esp8266:generic
+        --build-property compiler.cpp.extra_flags="
+          -Dserial
+          -DBAUDRATE=${BAUDRATE}
+          -DANSWERSIZE=${ANSWERSIZE}
+          -DUNITSAMOUNT=${UNITSAMOUNT}
+          -DFLAPAMOUNT=${FLAPAMOUNT}
+          -DMINSPEED=${MINSPEED}
+          -DMAXSPEED=${MAXSPEED}
+          -DESPLED=${ESPLED}
+          -DWIFI_SSID=\"${WIFI_SSID}\"
+          -DWIFI_PASSWORD=\"${WIFI_PASSWORD}\"
+          -DTIMEZONE_STRING=\"${TIMEZONE_STRING}\"
+          -DDATE_FORMAT=\"${DATE_FORMAT}\"
+          -DCLOCK_FORMAT=\"${CLOCK_FORMAT}\"
+        "
+        --output-dir ./out .
   upload:
     cmds:
       - arduino-cli upload -p /dev/tty.usbserial-21130 --fqbn esp8266:esp8266:generic --input-dir ./out
