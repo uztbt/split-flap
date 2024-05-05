@@ -37,6 +37,7 @@ const char* alignmentPath = "/alignment.txt";
 const char* speedsliderPath = "/speedslider.txt";
 const char* devicemodePath = "/devicemode.txt";
 
+// TODO: move to WifiFunctions.ino
 JSONVar values;
 
 Timezone timezone; //create ezTime timezone object
@@ -65,8 +66,10 @@ void setup() {
 
   // Web Server Root URL
   server.on("/", HTTP_GET, [](AsyncWebServerRequest * request) {
+    debugF("Root URL\n");
     request->send(LittleFS, "/index.html", "text/html");
   });
+  debugF("Registered the root path\n");
 
   server.serveStatic("/", LittleFS, "/");
 
