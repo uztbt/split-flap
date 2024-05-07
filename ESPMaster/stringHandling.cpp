@@ -1,3 +1,12 @@
+#include "stringHandling.h"
+#include "env.h"
+
+//converts input string to uppercase
+String cleanString(String message) {
+  message.toUpperCase();
+  return message;
+}
+
 //aligns string center by filling the left and right with spaces up the max of the units amount
 String centerString(String message) {
   //Takes care of the left side of the text (if any)
@@ -37,12 +46,6 @@ String leftString(String message) {
 
   message = cleanString(message);
 
-  return message;
-}
-
-//converts input string to uppercase
-String cleanString(String message) {
-  message.toUpperCase();
   return message;
 }
 

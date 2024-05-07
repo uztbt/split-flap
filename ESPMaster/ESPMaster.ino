@@ -11,10 +11,11 @@
 #include <NTPClient.h>
 #include <WiFiUdp.h>
 #include <ezTime.h>
+#include "env.h"
+#include "utils.h"
+#include "WifiFunctions.h"
+#include "FlapFunctions.h"
 
-const char letters[] = {' ', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', '$', '&', '#', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', ':', '.', '-', '?', '!'};
-int displayState[UNITSAMOUNT];
-String writtenLast;
 unsigned long previousMillis = 0;
 
 // Create AsyncWebServer object on port 80
@@ -25,20 +26,6 @@ const char* PARAM_ALIGNMENT = "alignment";
 const char* PARAM_SPEEDSLIDER = "speedslider";
 const char* PARAM_DEVICEMODE = "devicemode";
 const char* PARAM_INPUT_1 = "input1";
-
-//Variables to save values from HTML form
-String alignment;
-String speedslider;
-String devicemode;
-String input1;
-
-// File paths to save input values permanently
-const char* alignmentPath = "/alignment.txt";
-const char* speedsliderPath = "/speedslider.txt";
-const char* devicemodePath = "/devicemode.txt";
-
-// TODO: move to WifiFunctions.ino
-JSONVar values;
 
 Timezone timezone; //create ezTime timezone object
 
@@ -87,40 +74,37 @@ void setup() {
 
         // HTTP POST alignment value
         if (p->name() == PARAM_ALIGNMENT) {
-          alignment = p->value().c_str();
+          writeThroughAlignment(p->value());
 #ifdef serial
           Serial.print("Alignment set to: ");
-          Serial.println(alignment);
+          Serial.println(getAlignment());
 #endif
-          writeFile(LittleFS, alignmentPath, alignment.c_str());
         }
 
         // HTTP POST speed slider value
         if (p->name() == PARAM_SPEEDSLIDER) {
-          speedslider = p->value().c_str();
+          writeThroughSpeedSlider(p->value());
 #ifdef serial
           Serial.print("Speed set to: ");
-          Serial.println(speedslider);
+          Serial.println(getSpeedSlider());
 #endif
-          writeFile(LittleFS, speedsliderPath, speedslider.c_str());
         }
 
         // HTTP POST mode value
         if (p->name() == PARAM_DEVICEMODE) {
-          devicemode = p->value().c_str();
+          writeThroughDeviceMode(p->value());
 #ifdef serial
           Serial.print("Mode set to: ");
-          Serial.println(devicemode);
+          Serial.println(getDeviceMode());
 #endif
-          writeFile(LittleFS, devicemodePath, devicemode.c_str());
         }
 
         // HTTP POST input1 value
         if (p->name() == PARAM_INPUT_1) {
-          input1 = p->value().c_str();
+          setInput1(p->value());
 #ifdef serial
           Serial.print("Input 1 set to: ");
-          Serial.println(input1);
+          Serial.println(getInput1());
 #endif
         }
       }
@@ -146,11 +130,12 @@ void loop() {
     previousMillis = currentMillis;
 
     //Mode Selection
-    if (devicemode == "text") {
-      showNewData(input1);
-    } else if (devicemode == "date") {
+    String deviceMode = getDeviceMode();
+    if (deviceMode == "text") {
+      showNewData(getInput1());
+    } else if (deviceMode == "date") {
       showDate();
-    } else if (devicemode == "clock") {
+    } else if (deviceMode == "clock") {
       showClock();
     }
   }
