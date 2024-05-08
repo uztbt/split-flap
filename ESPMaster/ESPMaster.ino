@@ -21,12 +21,6 @@ unsigned long previousMillis = 0;
 // Create AsyncWebServer object on port 80
 AsyncWebServer server(80);
 
-// Search for parameter in HTTP POST request
-const char* PARAM_ALIGNMENT = "alignment";
-const char* PARAM_SPEEDSLIDER = "speedslider";
-const char* PARAM_DEVICEMODE = "devicemode";
-const char* PARAM_INPUT_1 = "input1";
-
 Timezone timezone; //create ezTime timezone object
 
 

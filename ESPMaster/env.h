@@ -47,3 +47,31 @@
 #ifndef CLOCK_FORMAT
 #define CLOCK_FORMAT "H:ia"
 #endif
+
+#ifndef PARAM_ALIGNMENT
+#define PARAM_ALIGNMENT "alignment"
+#endif
+
+#ifndef PARAM_SPEEDSLIDER
+#define PARAM_SPEEDSLIDER "speedslider"
+#endif
+
+#ifndef PARAM_DEVICEMODE
+#define PARAM_DEVICEMODE "devicemode"
+#endif
+
+#ifndef PARAM_INPUT_1
+#define PARAM_INPUT_1 "input1"
+#endif
+
+#ifndef ALIGNMENT_PATH
+#define ALIGNMENT_PATH "/alignment.txt"
+#endif
+
+#ifndef SPEEDSLIDER_PATH
+#define SPEEDSLIDER_PATH "/speedslider.txt"
+#endif
+
+#ifndef DEVICEMODE_PATH
+#define DEVICEMODE_PATH "/devicemode.txt"
+#endif

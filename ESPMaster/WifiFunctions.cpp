@@ -2,6 +2,7 @@
 #include "WifiFunctions.h"
 #include "LittleFS.h"
 #include "env.h"
+#include "files.h"
 
 JSONVar values;
 //Variables to save values from HTML form
@@ -11,58 +12,19 @@ String speedslider;
 String devicemode;
 String input1;
 
-// File paths to save input values permanently
-const char* alignmentPath = "/alignment.txt";
-const char* speedsliderPath = "/speedslider.txt";
-const char* devicemodePath = "/devicemode.txt";
-
-// Read File from LittleFS
-String readFile(fs::FS &fs, const char * path) {
-  Serial.printf("Reading file: %s\r\n", path);
-
-  File file = fs.open(path, "r");
-  if (!file || file.isDirectory()) {
-    Serial.println("- failed to open file for reading");
-    return String();
-  }
-
-  String fileContent;
-  while (file.available()) {
-    fileContent = file.readStringUntil('\n');
-    break;
-  }
-  return fileContent;
-}
-
-// Write file to LittleFS
-void writeFile(fs::FS &fs, const char * path, const char * message) {
-  Serial.printf("Writing file: %s\r\n", path);
-
-  File file = fs.open(path, "w");
-  if (!file) {
-    Serial.println("- failed to open file for writing");
-    return;
-  }
-  if (file.print(message)) {
-    Serial.println("- file written");
-  } else {
-    Serial.println("- frite failed");
-  }
-}
-
 void writeThroughAlignment(String message) {
   alignment = message;
-  writeFile(LittleFS, alignmentPath, alignment.c_str());
+  writeFile(LittleFS, ALIGNMENT_PATH, alignment.c_str());
 }
 
 void writeThroughSpeedSlider(String message) {
   speedslider = message;
-  writeFile(LittleFS, speedsliderPath, speedslider.c_str());
+  writeFile(LittleFS, SPEEDSLIDER_PATH, speedslider.c_str());
 }
 
 void writeThroughDeviceMode(String message) {
   devicemode = message;
-  writeFile(LittleFS, devicemodePath, devicemode.c_str());
+  writeFile(LittleFS, DEVICEMODE_PATH, devicemode.c_str());
 }
 
 void setInput1(String message) {
@@ -95,9 +57,9 @@ void setWrittenLast(String message) {
 
 void loadFSValues() {
   // Load values saved in LittleFS
-  alignment = readFile(LittleFS, alignmentPath);
-  speedslider = readFile(LittleFS, speedsliderPath);
-  devicemode = readFile(LittleFS, devicemodePath);
+  alignment = readFile(LittleFS, ALIGNMENT_PATH);
+  speedslider = readFile(LittleFS, SPEEDSLIDER_PATH);
+  devicemode = readFile(LittleFS, DEVICEMODE_PATH);
 }
 
 String getCurrentInputValues() {
@@ -125,14 +87,5 @@ void initWiFi() {
 #ifdef serial
   Serial.println(WiFi.localIP());
 #endif
-}
-
-
-// Initialize LittleFS
-void initFS() {
-  if (!LittleFS.begin()) {
-    Serial.println("An error has occurred while mounting LittleFS");
-  }
-  Serial.println("LittleFS mounted successfully");
 }
 
