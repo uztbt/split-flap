@@ -9,27 +9,10 @@
 #include <Wire.h>
 #include <Stepper.h>
 #include <EEPROM.h>
+#include <avr/io.h>
 #include <avr/sleep.h>
+#include "env.h"
 
-// Pins of I2C adress switch
-#define ADRESSSW1 6
-#define ADRESSSW2 5
-#define ADRESSSW3 4
-#define ADRESSSW4 3
-
-//constants stepper
-#define STEPPERPIN1 11
-#define STEPPERPIN2 10
-#define STEPPERPIN3 9
-#define STEPPERPIN4 8
-#define STEPS 2038 //28BYJ-48 stepper, number of steps
-#define HALLPIN 7 //Pin of hall sensor
-#define AMOUNTFLAPS 45
-
-//constants others
-#define BAUDRATE 115200
-#define ROTATIONDIRECTION -1 //-1 for reverse direction
-#define OVERHEATINGTIMEOUT 2 //timeout in seconds to avoid overheating of stepper. After starting rotation, the counter will start. Stepper won't move again until timeout is passed
 unsigned long lastRotation = 0;
 
 //globals
@@ -66,13 +49,11 @@ void setup() {
 
   i2cAddress = getaddress(); //get I2C Address and save in variable
 
-#ifdef serial
   //initialize serial
   Serial.begin(BAUDRATE);
   Serial.println("starting unit");
   Serial.print("I2CAddress: ");
   Serial.println(i2cAddress);
-#endif
 
   //I2C function assignment
   Wire.begin(i2cAddress); //i2c address of this unit
@@ -122,7 +103,6 @@ void loop() {
   //check if new letter was received through i2c
   if (displayedLetter != receivedNumber)
   {
-    /*
       #ifdef serial
       Serial.print("Value over serial received: ");
       Serial.print(receivedNumber);
@@ -130,7 +110,6 @@ void loop() {
       Serial.print(letters[receivedNumber]);
       Serial.println();
       #endif
-    */
     //rotate to new letter
     rotateToLetter(receivedNumber);
   }
@@ -163,7 +142,7 @@ void rotateToLetter(int toLetter) {
         stepper.setSpeed(stepperSpeed);
         //doing the rotation letterwise
         for (int i = 0; i < diffPosition; i++) {
-          float preciseStep = (float)STEPS / (float)AMOUNTFLAPS;
+          float preciseStep = (float)STEPS / (float)NUM_FLAPS;
           int roundedStep = (int)preciseStep;
           missedSteps = missedSteps + ((float)preciseStep - (float)roundedStep);
           if (missedSteps > 1) {
@@ -182,7 +161,7 @@ void rotateToLetter(int toLetter) {
         //startMotor();
         stepper.setSpeed(stepperSpeed);
         for (int i = 0; i < posLetter; i++) {
-          float preciseStep = (float)STEPS / (float)AMOUNTFLAPS;
+          float preciseStep = (float)STEPS / (float)NUM_FLAPS;
           int roundedStep = (int)preciseStep;
           missedSteps = missedSteps + (float)preciseStep - (float)roundedStep;
           if (missedSteps > 1) {
@@ -238,12 +217,22 @@ int getaddress() {
 
 //gets magnet sensor offset from EEPROM in steps
 void getOffset() {
-  EEPROM.get(eeAddress, calOffset);
-#ifdef serial
-  Serial.print("CalOffset from EEPROM: ");
-  Serial.print(calOffset);
-  Serial.println();
-#endif
+  switch(i2cAddress) {
+    case 0:
+      calOffset = OFFSET_0;
+      break;
+    case 1:
+      calOffset = OFFSET_1;
+      break;
+    case 2:
+      calOffset = OFFSET_2;
+      break;
+    case 3:
+      calOffset = OFFSET_3;
+      break;
+  }
+  Serial.print("Caloffset: ");
+  Serial.println(calOffset);
 }
 
 //doing a calibration of the revolver using the hall sensor
@@ -257,6 +246,9 @@ int calibrate(bool initialCalibration) {
   int i = 0;
   while (!reachedMarker) {
     int currentHallValue = digitalRead(HALLPIN);
+    Serial.print("Hall: ");
+    Serial.println(currentHallValue);
+
     if (currentHallValue == 1 && i == 0) { //already in zero position move out a bit and do the calibration {
       //not reached yet
       i = 50;

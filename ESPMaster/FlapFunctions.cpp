@@ -3,6 +3,7 @@
 #include "FlapFunctions.h"
 #include "env.h"
 #include "WifiFunctions.h"
+#include "utils.h"
 
 int displayState[UNITSAMOUNT];
 const char letters[] = {' ', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', '$', '&', '#', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', ':', '.', '-', '?', '!'};
@@ -45,6 +46,11 @@ void writeToUnit(int address, int letter, int flapSpeed) {
 
 //pushes message to units
 void showMessage(String message, int flapSpeed) {
+  Serial.println("Entering showMessage function");
+  Serial.print("Message: ");
+  Serial.println(message);
+  Serial.print("FlapSpeed: ");
+  Serial.println(flapSpeed);
 
   //Format string per alignment choice
   String alignment = getAlignment();

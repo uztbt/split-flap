@@ -21,46 +21,44 @@ unsigned long previousMillis = 0;
 // Create AsyncWebServer object on port 80
 AsyncWebServer server(80);
 
-Timezone timezone; //create ezTime timezone object
+Timezone timezone; // create ezTime timezone object
 
-
-void setup() {
+void setup()
+{
   // Serial port for debugging purposes
 #ifdef serial
   Serial.begin(BAUDRATE);
   Serial.println("master start");
 #endif
 
-  //deactivate I2C if debugging the ESP, otherwise serial does not work
-#ifndef serial
-  Wire.begin(1, 3); //For ESP01 only
-#endif
-  //Wire.begin(D1, D2); //For NodeMCU testing only SDA=D1 and SCL=D2
+  Wire.begin(4, 5); // For ESP12-F
 
-  initWiFi(); //initializes WiFi
-  initFS(); //initializes filesystem
-  loadFSValues(); //loads initial values from filesystem
+  initWiFi();     // initializes WiFi
+  initFS();       // initializes filesystem
+  loadFSValues(); // loads initial values from filesystem
 
-  //ezTime initialization
+  // ezTime initialization
   waitForSync();
   timezone.setLocation(TIMEZONE_STRING);
 
   // Web Server Root URL
-  server.on("/", HTTP_GET, [](AsyncWebServerRequest * request) {
+  server.on("/", HTTP_GET, [](AsyncWebServerRequest *request)
+            {
     debugF("Root URL\n");
-    request->send(LittleFS, "/index.html", "text/html");
-  });
+    request->send(LittleFS, "/index.html", "text/html"); });
   debugF("Registered the root path\n");
 
   server.serveStatic("/", LittleFS, "/");
 
-  server.on("/values", HTTP_GET, [](AsyncWebServerRequest * request) {
+  server.on("/values", HTTP_GET, [](AsyncWebServerRequest *request)
+            {
     String json = getCurrentInputValues();
     request->send(200, "application/json", json);
-    json = String();
-  });
+    json = String(); });
 
-  server.on("/", HTTP_POST, [](AsyncWebServerRequest * request) {
+  server.on("/", HTTP_POST, [](AsyncWebServerRequest *request)
+            {
+    debugF("POST request\n");
     int params = request->params();
     for (int i = 0; i < params; i++) {
       AsyncWebParameter* p = request->getParam(i);
@@ -103,35 +101,36 @@ void setup() {
         }
       }
     }
-    request->send(LittleFS, "/index.html", "text/html");
-  });
+    request->send(LittleFS, "/index.html", "text/html"); });
   server.begin();
-#ifdef serial
-  Serial.println("master ready");
-#endif
+  debugF("master ready\n");
 }
 
+void loop()
+{
+  events(); // ezTime library function
 
-void loop() {
-
-  events(); //ezTime library function
-
-  //Reset loop delay
+  // Reset loop delay
   unsigned long currentMillis = millis();
 
-  //Delay to not spam web requests
-  if (currentMillis - previousMillis >= 1024) {
+  // Delay to not spam web requests
+  if (currentMillis - previousMillis >= 1024)
+  {
     previousMillis = currentMillis;
 
-    //Mode Selection
+    // Mode Selection
     String deviceMode = getDeviceMode();
-    if (deviceMode == "text") {
+    if (deviceMode == "text")
+    {
       showNewData(getInput1());
-    } else if (deviceMode == "date") {
+    }
+    else if (deviceMode == "date")
+    {
       showDate();
-    } else if (deviceMode == "clock") {
+    }
+    else if (deviceMode == "clock")
+    {
       showClock();
     }
   }
-
 }
