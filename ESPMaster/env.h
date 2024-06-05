@@ -9,7 +9,7 @@
 #endif
 
 #ifndef UNITSAMOUNT
-#define UNITSAMOUNT 10
+#define UNITSAMOUNT 16
 #endif
 
 #ifndef FLAPAMOUNT

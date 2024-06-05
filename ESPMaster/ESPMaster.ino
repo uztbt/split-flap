@@ -33,7 +33,7 @@ void setup()
 
   Wire.begin(4, 5); // For ESP12-F
 
-  initWiFi();     // initializes WiFi
+  IPAddress ip = initWiFi();     // initializes WiFi
   initFS();       // initializes filesystem
   loadFSValues(); // loads initial values from filesystem
 
@@ -104,6 +104,7 @@ void setup()
     request->send(LittleFS, "/index.html", "text/html"); });
   server.begin();
   debugF("master ready\n");
+  showMessage(ip.toString(), 12);
 }
 
 void loop()
@@ -120,6 +121,8 @@ void loop()
 
     // Mode Selection
     String deviceMode = getDeviceMode();
+    Serial.print("Loop. Device Mode: ");
+    Serial.println(deviceMode);
     if (deviceMode == "text")
     {
       showNewData(getInput1());

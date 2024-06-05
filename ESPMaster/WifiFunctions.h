@@ -20,7 +20,7 @@ String getWrittenLast();
 void setWrittenLast(String message);
 void loadFSValues();
 String getCurrentInputValues();
-void initWiFi();
+IPAddress initWiFi();
 void initFS();
 
 #endif // WIFIFUNCTIONS_H

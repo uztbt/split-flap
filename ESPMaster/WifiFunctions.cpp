@@ -5,64 +5,76 @@
 #include "files.h"
 
 JSONVar values;
-//Variables to save values from HTML form
+// Variables to save values from HTML form
 String writtenLast;
 String alignment;
 String speedslider;
 String devicemode;
 String input1;
 
-void writeThroughAlignment(String message) {
+void writeThroughAlignment(String message)
+{
   alignment = message;
   writeFile(LittleFS, ALIGNMENT_PATH, alignment.c_str());
 }
 
-void writeThroughSpeedSlider(String message) {
+void writeThroughSpeedSlider(String message)
+{
   speedslider = message;
   writeFile(LittleFS, SPEEDSLIDER_PATH, speedslider.c_str());
 }
 
-void writeThroughDeviceMode(String message) {
+void writeThroughDeviceMode(String message)
+{
   devicemode = message;
   writeFile(LittleFS, DEVICEMODE_PATH, devicemode.c_str());
 }
 
-void setInput1(String message) {
+void setInput1(String message)
+{
   input1 = message;
 }
 
-String getAlignment() {
+String getAlignment()
+{
   return alignment;
 }
 
-String getDeviceMode() {
+String getDeviceMode()
+{
   return devicemode;
 }
 
-String getInput1() {
+String getInput1()
+{
   return input1;
 }
 
-String getSpeedSlider() {
+String getSpeedSlider()
+{
   return speedslider;
 }
 
-String getWrittenLast() {
+String getWrittenLast()
+{
   return writtenLast;
 }
 
-void setWrittenLast(String message) {
+void setWrittenLast(String message)
+{
   writtenLast = message;
 }
 
-void loadFSValues() {
+void loadFSValues()
+{
   // Load values saved in LittleFS
   alignment = readFile(LittleFS, ALIGNMENT_PATH);
   speedslider = readFile(LittleFS, SPEEDSLIDER_PATH);
   devicemode = readFile(LittleFS, DEVICEMODE_PATH);
 }
 
-String getCurrentInputValues() {
+String getCurrentInputValues()
+{
   values["alignment"] = alignment;
   values["speedSlider"] = speedslider;
   values["devicemode"] = devicemode;
@@ -71,21 +83,22 @@ String getCurrentInputValues() {
   return jsonString;
 }
 
-
 // Initialize WiFi
-void initWiFi() {
+IPAddress initWiFi()
+{
   WiFi.mode(WIFI_STA);
   WiFi.hostname("SplitFlap");
   WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
 #ifdef serial
   Serial.print("Connecting to WiFi ..");
 #endif
-  while (WiFi.status() != WL_CONNECTED) {
+  while (WiFi.status() != WL_CONNECTED)
+  {
     Serial.print('.');
     delay(1000);
   }
 #ifdef serial
   Serial.println(WiFi.localIP());
 #endif
+  return WiFi.localIP();
 }
-
