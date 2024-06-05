@@ -32,3 +32,15 @@
 #define OFFSET_1 1375 // O: 30 letters * 45.28888 steps / letter = 1358 steps, plus x
 #define OFFSET_2 1615 // J: 35 letters * 45.28888 steps / letter = 1585 steps, plus x
 #define OFFSET_3 1912 // C: 42 letters * 45.28888 steps / letter = 1902 steps, plus x
+#define OFFSET_4 2012 // A: 44 letters * 45.28888 steps / letter = 1992 steps, plus x
+#define OFFSET_5 780 // &: 17 letters * 45.28888 steps / letter = 770 steps, plus x
+#define OFFSET_6 780 // &: 17 letters * 45.28888 steps / letter = 770 steps, plus x
+#define OFFSET_7 780 // &: 17 letters * 45.28888 steps / letter = 770 steps, plus x
+#define OFFSET_8 770 // &: 17 letters * 45.28888 steps / letter = 770 steps, plus x
+#define OFFSET_9 825 // $: 18 letters * 45.28888 steps / letter = 770 steps, plus x
+#define OFFSET_10 735 // #: 16 letters * 45.28888 steps / letter = 770 steps, plus x
+#define OFFSET_11 735 // #: 16 letters * 45.28888 steps / letter = 770 steps, plus x
+#define OFFSET_12 735 // #: 16 letters * 45.28888 steps / letter = 770 steps, plus x
+#define OFFSET_13 770 // &: 17 letters * 45.28888 steps / letter = 770 steps, plus x
+#define OFFSET_14 770 // &: 17 letters * 45.28888 steps / letter = 770 steps, plus x
+#define OFFSET_15 725 // # 16 letters * 45.28888 steps / letter = 770 steps, plus x

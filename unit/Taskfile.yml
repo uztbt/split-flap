@@ -8,13 +8,12 @@ tasks:
       - arduino-cli compile -P arduinoasisp --fqbn arduino:avr:uno
         --build-property compiler.cpp.extra_flags="
           -Dserial
-          -Dtest
           -DBAUDRATE=${BAUDRATE}
         "
         --output-dir ./out .
   upload-isp:
     cmds:
-      - arduino-cli upload -v -p /dev/tty.usbmodem2111201 -P arduinoasisp --fqbn arduino:avr:uno --input-dir ./out
+      - arduino-cli upload -v -p /dev/tty.usbmodem2111101 -P arduinoasisp --fqbn arduino:avr:uno --input-dir ./out
   upload-isp-keep-eeprom:
     cmds:
-      - /Users/ytabata/Library/Arduino15/packages/arduino/tools/avrdude/6.3.0-arduino17/bin/avrdude "-C/Users/ytabata/Library/Arduino15/packages/arduino/tools/avrdude/6.3.0-arduino17/etc/avrdude.conf" -v -V -patmega328p -cstk500v1 -P/dev/tty.usbmodem2111201 -b19200 "-Uflash:w:./out/unit.ino.hex:i" -D
+      - /Users/ytabata/Library/Arduino15/packages/arduino/tools/avrdude/6.3.0-arduino17/bin/avrdude "-C/Users/ytabata/Library/Arduino15/packages/arduino/tools/avrdude/6.3.0-arduino17/etc/avrdude.conf" -v -V -patmega328p -cstk500v1 -P/dev/tty.usbmodem2111101 -b19200 "-Uflash:w:./out/unit.ino.hex:i" -D
