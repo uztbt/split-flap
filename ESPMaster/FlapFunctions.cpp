@@ -24,13 +24,39 @@ int translateLettertoInt(char letterchar)
 // checks for new message to show
 void showNewData(String message)
 {
-  Serial.print("showNewData: New message to show: ");
-  Serial.println(message);
+  Wire.flush();
   if (getWrittenLast() != message)
   {
     showMessage(message, convertSpeed(getSpeedSlider()));
   }
   setWrittenLast(message);
+}
+
+void updateOffset(bool force)
+{
+  int address = getOffsetUpdateUnitAddr();
+  int offset = getOffsetUpdateOffset();
+
+  int currentOffset = getOffset(address);
+
+  if (!force && currentOffset == offset)
+  {
+    Serial.printf("Offset at %d is already set to the desired value %d, no need to update\n", address, offset);
+    return;
+  }
+  Serial.printf("Updating offset at %d is currently %d, updating to %d\n", address, currentOffset, offset);
+  Wire.beginTransmission(address);
+  Wire.write(COMMAND_UPDATE_OFFSET);
+  // Decompose offset into two bytes
+  int offsetMSB = (offset >> 8) & 0xFF;
+  int offsetLSB = offset & 0xFF;
+  Serial.printf("Offset MSB: %d, LSB: %d\n", offsetMSB, offsetLSB);
+  Wire.write(offsetMSB);
+  Serial.printf("Offset MSB written\n");
+  Wire.write(offsetLSB);
+  Serial.printf("Offset LSB written\n");
+  int retEndTransmission = Wire.endTransmission();
+  Serial.printf("EndTransmission returned: %d\n", retEndTransmission);
 }
 
 // write letter position and speed in rpm to single unit
@@ -39,6 +65,9 @@ void writeToUnit(int address, int letter, int flapSpeed)
   int sendArray[2] = {letter, flapSpeed}; // Array with values to send to unit
 
   Wire.beginTransmission(address);
+
+  // Send command to show letter
+  Wire.write(COMMAND_SHOW_LETTER);
 
   // Write values to send to slave in buffer
   for (unsigned int i = 0; i < sizeof sendArray / sizeof sendArray[0]; i++)
@@ -121,14 +150,8 @@ int checkIfMoving(int address)
 {
   char active;
   Wire.requestFrom(address, ANSWERSIZE, 1);
-  for (int i = 0; i < 2; i++) {
-    if (Wire.available())
-    {
-      break;
-    }
-    delay(100);
-  }
   active = Wire.read();
+  Wire.flush();
 #ifdef serial
   Serial.print(address);
   Serial.print(":");
@@ -145,6 +168,16 @@ int checkIfMoving(int address)
     // delay(5);
   }
   return active;
+}
+
+int getOffset(int address)
+{
+  Wire.requestFrom(address, ANSWERSIZE, 1);
+  Wire.read(); // Throw away the first byte, it's the isActive byte
+  int offsetMSB = Wire.read();
+  int offsetLSB = Wire.read();
+  int offset = (offsetMSB << 8) | offsetLSB;
+  return offset;
 }
 
 // checks if unit in display is currently moving

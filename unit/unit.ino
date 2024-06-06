@@ -21,8 +21,9 @@ float missedSteps = 0;                                                      // c
 int currentlyrotating = 0;                                                  // 1 = drum is currently rotating, 0 = drum is standing still
 int stepperSpeed = 10;                                                      // current speed of stepper, value only for first homing
 int calOffset;                                                              // Offset for calibration in steps, stored in EEPROM, gets read in setup
-int receivedNumber = 0;
+int letterNumber = 0;
 int i2cAddress;
+bool offsetUpdatedFlag = false;
 
 // sleep globals
 const unsigned long WAIT_TIME = 2000; // wait time before sleep routine gets executed again in milliseconds
@@ -52,24 +53,23 @@ void setup()
   EEPROM.write(0, restartTimes + 1);
 
   // I2C function assignment
-  Wire.begin(i2cAddress);        // i2c address of this unit
-  Wire.onReceive(receiveLetter); // call-function for transfered letter via i2c
-  Wire.onRequest(requestEvent);  // call-funtion if master requests unit state
+  Wire.begin(i2cAddress);         // i2c address of this unit
+  Wire.onReceive(commandHandler); // call-function for transfered letter via i2c
+  Wire.onRequest(requestEvent);   // call-funtion if master requests unit state
 
   getOffset();     // get calibration offset
   calibrate(true); // home stepper after startup
 
-  // test calibration settings
-  if (restartTimes % 2 == 0)
+// test calibration settings
+#ifdef test
+  int calLetters[10] = {0, 26, 1, 21, 14, 43, 30, 31, 32, 39};
+  for (int i = 0; i < 10; i++)
   {
-    int calLetters[10] = {0, 26, 1, 21, 14, 43, 30, 31, 32, 39};
-    for (int i = 0; i < 10; i++)
-    {
-      int currentCalLetter = calLetters[i];
-      rotateToLetter(currentCalLetter);
-      delay(2000);
-    }
+    int currentCalLetter = calLetters[i];
+    rotateToLetter(currentCalLetter);
+    delay(2000);
   }
+#endif
 }
 
 void loop()
@@ -100,18 +100,24 @@ void loop()
     Wire.begin(i2cAddress);
   } // end of time to sleep
 
+  if (offsetUpdatedFlag)
+  {
+    offsetUpdatedFlag = false;
+    calibrate(true);
+  }
+
   // check if new letter was received through i2c
-  if (displayedLetter != receivedNumber)
+  if (displayedLetter != letterNumber)
   {
 #ifdef serial
     Serial.print("Value over serial received: ");
-    Serial.print(receivedNumber);
+    Serial.print(letterNumber);
     Serial.print(" Letter: ");
-    Serial.print(letters[receivedNumber]);
+    Serial.print(letters[letterNumber]);
     Serial.println();
 #endif
     // rotate to new letter
-    rotateToLetter(receivedNumber);
+    rotateToLetter(letterNumber);
   }
 }
 
@@ -196,22 +202,72 @@ void rotateToLetter(int toLetter)
   }
 }
 
-void receiveLetter(int numBytes)
+void commandHandler(int numBytes)
 {
-  int receiveArray[2]; // array for received bytes
+  int receivedInts[3];
 
   for (int i = 0; i < numBytes; i++)
   {
-    receiveArray[i] = Wire.read();
+    Serial.print("Received byte ");
+    Serial.print(i);
+    Serial.print(": ");
+    receivedInts[i] = Wire.read();
+    Serial.println(receivedInts[i]);
   }
   // Write received bytes to correct variables
-  receivedNumber = receiveArray[0];
-  stepperSpeed = receiveArray[1];
+  int kind = receivedInts[0];
+
+  Serial.print("Command received: ");
+  Serial.println(kind);
+  Serial.print("COMMAND_UPDATE_OFFSET: ");
+  Serial.println(COMMAND_UPDATE_OFFSET);
+  Serial.print("COMMAND_SHOW_LETTER: ");
+  Serial.println(COMMAND_SHOW_LETTER);
+
+  if (kind == COMMAND_UPDATE_OFFSET)
+  {
+    int newOffset = receivedInts[EEPROM_ADDR_OFFSET_HIGHER_BYTE] << 8 | receivedInts[EEPROM_ADDR_OFFSET_LOWER_BYTE];
+    if (newOffset != calOffset)
+    {
+      calOffset = newOffset;
+      EEPROM.write(EEPROM_ADDR_OFFSET_HIGHER_BYTE, receivedInts[EEPROM_ADDR_OFFSET_HIGHER_BYTE]);
+      EEPROM.write(EEPROM_ADDR_OFFSET_LOWER_BYTE, receivedInts[EEPROM_ADDR_OFFSET_LOWER_BYTE]);
+      Serial.print("Caloffset updated: ");
+      Serial.println(calOffset);
+      offsetUpdatedFlag = true;
+    }
+    else
+    {
+      Serial.print("Caloffset not updated because it is the same as before: ");
+      Serial.println(calOffset);
+    }
+  }
+  else if (kind == COMMAND_SHOW_LETTER)
+  {
+    Serial.print("Letter received: ");
+    letterNumber = receivedInts[1];
+    stepperSpeed = receivedInts[2];
+    Serial.print(letters[letterNumber]);
+    Serial.print(" Speed: ");
+    Serial.println(stepperSpeed);
+  }
+  else
+  {
+    Serial.println("Unknown command");
+  }
 }
 
 void requestEvent()
 {
-  Wire.write(currentlyrotating); // send unit status to master
+  // Send unit status to master
+  Wire.write(currentlyrotating);
+  // Send offset to master
+  Wire.write(EEPROM.read(EEPROM_ADDR_OFFSET_HIGHER_BYTE));
+  Wire.write(EEPROM.read(EEPROM_ADDR_OFFSET_LOWER_BYTE));
+  Serial.print("Offset sent: ");
+  Serial.print(EEPROM.read(EEPROM_ADDR_OFFSET_HIGHER_BYTE));
+  Serial.print(" ");
+  Serial.println(EEPROM.read(EEPROM_ADDR_OFFSET_LOWER_BYTE));
   /*
     #ifdef serial
     Serial.print("Status ");
@@ -232,60 +288,9 @@ int getaddress()
 // gets magnet sensor offset from EEPROM in steps
 void getOffset()
 {
-  switch (i2cAddress)
-  {
-  case 0:
-    calOffset = OFFSET_0;
-    break;
-  case 1:
-    calOffset = OFFSET_1;
-    break;
-  case 2:
-    calOffset = OFFSET_2;
-    break;
-  case 3:
-    calOffset = OFFSET_3;
-    break;
-  case 4:
-    calOffset = OFFSET_4;
-    break;
-  case 5:
-    calOffset = OFFSET_5;
-    break;
-  case 6:
-    calOffset = OFFSET_6;
-    break;
-  case 7:
-    calOffset = OFFSET_7;
-    break;
-  case 8:
-    calOffset = OFFSET_8;
-    break;
-  case 9:
-    calOffset = OFFSET_9;
-    break;
-  case 10:
-    calOffset = OFFSET_10;
-    break;
-  case 11:
-    calOffset = OFFSET_11;
-    break;
-  case 12:
-    calOffset = OFFSET_12;
-    break;
-  case 13:
-    calOffset = OFFSET_13;
-    break;
-  case 14:
-    calOffset = OFFSET_14;
-    break;
-  case 15:
-    calOffset = OFFSET_15;
-    break;
-  default:
-    calOffset = 0;
-    break;
-  }
+  int highByte = EEPROM.read(EEPROM_ADDR_OFFSET_HIGHER_BYTE);
+  int lowByte = EEPROM.read(EEPROM_ADDR_OFFSET_LOWER_BYTE);
+  calOffset = highByte << 8 | lowByte;
   Serial.print("Caloffset: ");
   Serial.println(calOffset);
 }

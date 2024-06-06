@@ -11,6 +11,8 @@ String alignment;
 String speedslider;
 String devicemode;
 String input1;
+int offsetUpdateUnitAddr = -1;
+int offsetUpdateOffset = -1;
 
 void writeThroughAlignment(String message)
 {
@@ -33,6 +35,16 @@ void writeThroughDeviceMode(String message)
 void setInput1(String message)
 {
   input1 = message;
+}
+
+void setOffsetUpdateUnitAddr(int unitAddr)
+{
+  offsetUpdateUnitAddr = unitAddr;
+}
+
+void setOffsetUpdateOffset(int offset)
+{
+  offsetUpdateOffset = offset;
 }
 
 String getAlignment()
@@ -63,6 +75,16 @@ String getWrittenLast()
 void setWrittenLast(String message)
 {
   writtenLast = message;
+}
+
+int getOffsetUpdateUnitAddr()
+{
+  return offsetUpdateUnitAddr;
+}
+
+int getOffsetUpdateOffset()
+{
+  return offsetUpdateOffset;
 }
 
 void loadFSValues()

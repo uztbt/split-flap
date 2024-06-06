@@ -4,9 +4,7 @@
 #define BAUDRATE 115200
 #endif
 
-#ifndef ANSWERSIZE
-#define ANSWERSIZE 1
-#endif
+#define ANSWERSIZE 3
 
 #ifndef UNITSAMOUNT
 #define UNITSAMOUNT 16
@@ -26,6 +24,14 @@
 
 #ifndef ESPLED
 #define ESPLED 1
+#endif
+
+#ifndef COMMAND_UPDATE_OFFSET
+#define COMMAND_UPDATE_OFFSET 0
+#endif
+
+#ifndef COMMAND_SHOW_LETTER
+#define COMMAND_SHOW_LETTER 1
 #endif
 
 #ifndef WIFI_SSID
@@ -62,6 +68,14 @@
 
 #ifndef PARAM_INPUT_1
 #define PARAM_INPUT_1 "input1"
+#endif
+
+#ifndef PARAM_OFFSET_UNIT_ADDR
+#define PARAM_OFFSET_UNIT_ADDR "unit"
+#endif
+
+#ifndef PARAM_OFFSET_OFFSET
+#define PARAM_OFFSET_OFFSET "offset"
 #endif
 
 #ifndef ALIGNMENT_PATH

@@ -10,7 +10,6 @@ tasks:
         --build-property compiler.cpp.extra_flags="
           -Dserial
           -DBAUDRATE=${BAUDRATE}
-          -DANSWERSIZE=${ANSWERSIZE}
           -DUNITSAMOUNT=${UNITSAMOUNT}
           -DFLAPAMOUNT=${FLAPAMOUNT}
           -DMINSPEED=${MINSPEED}
@@ -25,5 +24,5 @@ tasks:
         --output-dir ./out .
   upload:
     cmds:
-      - arduino-cli upload -p /dev/tty.usbserial-3 --fqbn esp8266:esp8266:generic --input-dir ./out
+      - arduino-cli upload -p /dev/tty.usbserial-1 --fqbn esp8266:esp8266:generic --input-dir ./out
   

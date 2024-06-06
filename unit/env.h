@@ -26,6 +26,12 @@
 //constants others
 #define ROTATIONDIRECTION 1 //-1 for reverse direction
 #define OVERHEATINGTIMEOUT 2 //timeout in seconds to avoid overheating of stepper. After starting rotation, the counter will start. Stepper won't move again until timeout is passed
+#define COMMAND_UPDATE_OFFSET 0 //command to update offset
+#define COMMAND_SHOW_LETTER 1 //command to show letter
+
+// EEPROM addresses
+#define EEPROM_ADDR_OFFSET_HIGHER_BYTE 1 //offset in EEPROM
+#define EEPROM_ADDR_OFFSET_LOWER_BYTE 2 //offset in EEPROM
 
 // 2038 steps / 45 letters = 45.28888 steps / letter
 #define OFFSET_0 1155 // 25 letters * 45.28888 steps / letter = 1132 steps, plus x
@@ -36,11 +42,11 @@
 #define OFFSET_5 780 // &: 17 letters * 45.28888 steps / letter = 770 steps, plus x
 #define OFFSET_6 780 // &: 17 letters * 45.28888 steps / letter = 770 steps, plus x
 #define OFFSET_7 780 // &: 17 letters * 45.28888 steps / letter = 770 steps, plus x
-#define OFFSET_8 770 // &: 17 letters * 45.28888 steps / letter = 770 steps, plus x
+#define OFFSET_8 755 // # 16 letters * 45.28888 steps / letter = 770 steps, plus x
 #define OFFSET_9 825 // $: 18 letters * 45.28888 steps / letter = 770 steps, plus x
-#define OFFSET_10 735 // #: 16 letters * 45.28888 steps / letter = 770 steps, plus x
+#define OFFSET_10 725 // #: 16 letters * 45.28888 steps / letter = 770 steps, plus x
 #define OFFSET_11 735 // #: 16 letters * 45.28888 steps / letter = 770 steps, plus x
-#define OFFSET_12 735 // #: 16 letters * 45.28888 steps / letter = 770 steps, plus x
+#define OFFSET_12 725 // #: 16 letters * 45.28888 steps / letter = 770 steps, plus x
 #define OFFSET_13 770 // &: 17 letters * 45.28888 steps / letter = 770 steps, plus x
 #define OFFSET_14 770 // &: 17 letters * 45.28888 steps / letter = 770 steps, plus x
-#define OFFSET_15 725 // # 16 letters * 45.28888 steps / letter = 770 steps, plus x
+#define OFFSET_15 725 // &: 16 letters * 45.28888 steps / letter = 770 steps, plus x
