@@ -51,7 +51,7 @@
 #endif
 
 #ifndef CLOCK_FORMAT
-#define CLOCK_FORMAT "H:ia"
+#define CLOCK_FORMAT "Y-m-d H:i"
 #endif
 
 #ifndef PARAM_ALIGNMENT

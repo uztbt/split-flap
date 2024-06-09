@@ -140,12 +140,16 @@ void showMessage(String message, int flapSpeed)
 
 void showDate()
 {
-  showNewData(dateTime(DATE_FORMAT));
+  Timezone Japan;
+  Japan.setLocation("JP");
+  showNewData(Japan.dateTime(DATE_FORMAT));
 }
 
 void showClock()
 {
-  showNewData(dateTime(CLOCK_FORMAT));
+  Timezone Japan;
+  Japan.setLocation("JP");
+  showNewData(Japan.dateTime(CLOCK_FORMAT));
 }
 
 // checks if single unit is moving

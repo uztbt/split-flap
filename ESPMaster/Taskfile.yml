@@ -19,7 +19,6 @@ tasks:
           -DWIFI_PASSWORD=\"${WIFI_PASSWORD}\"
           -DTIMEZONE_STRING=\"${TIMEZONE_STRING}\"
           -DDATE_FORMAT=\"${DATE_FORMAT}\"
-          -DCLOCK_FORMAT=\"${CLOCK_FORMAT}\"
         "
         --output-dir ./out .
   upload:
