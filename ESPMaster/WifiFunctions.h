@@ -6,17 +6,15 @@
 #include <Arduino.h>
 #include <ESP8266WiFi.h>
 
-String readFile(fs::FS &fs, const char * path);
-void writeFile(fs::FS &fs, const char * path, const char * message);
 void writeThroughAlignment(String message);
 void writeThroughSpeedSlider(String message);
 void writeThroughDeviceMode(String message);
-void setInput1(String message);
+void setText(String message);
 void setOffsetUpdateUnitAddr(int unitAddr);
 void setOffsetUpdateOffset(int offset);
 String getAlignment();
 String getDeviceMode();
-String getInput1();
+String getText();
 String getSpeedSlider();
 String getWrittenLast();
 int getOffsetUpdateUnitAddr();

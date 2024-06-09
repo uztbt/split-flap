@@ -10,7 +10,7 @@ String writtenLast;
 String alignment;
 String speedslider;
 String devicemode;
-String input1;
+String text;
 int offsetUpdateUnitAddr = -1;
 int offsetUpdateOffset = -1;
 
@@ -32,9 +32,9 @@ void writeThroughDeviceMode(String message)
   writeFile(LittleFS, DEVICEMODE_PATH, devicemode.c_str());
 }
 
-void setInput1(String message)
+void setText(String message)
 {
-  input1 = message;
+  text = message;
 }
 
 void setOffsetUpdateUnitAddr(int unitAddr)
@@ -57,9 +57,9 @@ String getDeviceMode()
   return devicemode;
 }
 
-String getInput1()
+String getText()
 {
-  return input1;
+  return text;
 }
 
 String getSpeedSlider()

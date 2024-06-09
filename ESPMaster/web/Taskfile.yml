@@ -1,0 +1,15 @@
+version: 3
+
+tasks:
+  build:
+    cmds:
+      - echo "Building..."
+      - npm run build
+      - rm -rf ../data
+      - cp -r dist ../data
+  test:
+    cmds:
+      - echo "Testing..."
+  deploy:
+    cmds:
+      - echo "Deploying..."

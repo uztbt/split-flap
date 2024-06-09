@@ -55,7 +55,7 @@ void setup()
   // I2C function assignment
   Wire.begin(i2cAddress);         // i2c address of this unit
   Wire.onReceive(commandHandler); // call-function for transfered letter via i2c
-  Wire.onRequest(requestEvent);   // call-funtion if master requests unit state
+  Wire.onRequest(requestHandler);   // call-funtion if master requests unit state
 
   getOffset();     // get calibration offset
   calibrate(true); // home stepper after startup
@@ -257,17 +257,19 @@ void commandHandler(int numBytes)
   }
 }
 
-void requestEvent()
+void requestHandler()
 {
   // Send unit status to master
   Wire.write(currentlyrotating);
   // Send offset to master
-  Wire.write(EEPROM.read(EEPROM_ADDR_OFFSET_HIGHER_BYTE));
-  Wire.write(EEPROM.read(EEPROM_ADDR_OFFSET_LOWER_BYTE));
+  uint8_t highByte = EEPROM.read(EEPROM_ADDR_OFFSET_HIGHER_BYTE);
+  uint8_t lowByte = EEPROM.read(EEPROM_ADDR_OFFSET_LOWER_BYTE);
+  Wire.write(highByte);
+  Wire.write(lowByte);
   Serial.print("Offset sent: ");
-  Serial.print(EEPROM.read(EEPROM_ADDR_OFFSET_HIGHER_BYTE));
+  Serial.print(highByte);
   Serial.print(" ");
-  Serial.println(EEPROM.read(EEPROM_ADDR_OFFSET_LOWER_BYTE));
+  Serial.println(lowByte);
   /*
     #ifdef serial
     Serial.print("Status ");

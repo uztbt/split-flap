@@ -47,7 +47,6 @@ void setup()
             {
     debugF("Root URL\n");
     request->send(LittleFS, "/index.html", "text/html"); });
-  debugF("Registered the root path\n");
 
   server.serveStatic("/", LittleFS, "/");
 
@@ -56,6 +55,13 @@ void setup()
     String json = getCurrentInputValues();
     request->send(200, "application/json", json);
     json = String(); });
+
+  server.on("/offset", HTTP_GET, [](AsyncWebServerRequest *request)
+            {
+    // Return all the offsets in JSON format
+    String json = getOffsetsInString();
+    request->send(200, "application/json", json);
+            });
 
   server.on("/offset", HTTP_POST, [](AsyncWebServerRequest *request)
             {
@@ -124,18 +130,19 @@ void setup()
 #endif
         }
 
-        // HTTP POST input1 value
-        if (p->name() == PARAM_INPUT_1) {
-          setInput1(p->value());
+        // HTTP POST text value
+        if (p->name() == PARAM_TEXT) {
+          setText(p->value());
 #ifdef serial
           Serial.print("Input 1 set to: ");
-          Serial.println(getInput1());
+          Serial.println(getText());
 #endif
         }
       }
     }
     request->send(LittleFS, "/index.html", "text/html"); });
   server.begin();
+  readOffsets();
   debugF("master ready\n");
   showMessage(ip.toString(), 12);
 }
@@ -157,17 +164,20 @@ void loop()
       offsetUpdateFlag = false;
       // Make sure that the display is on the home position
       writeThroughDeviceMode("text");
-      setInput1(" ");
+      setText(" ");
+      
       updateOffset(false);
     }
 
     // Mode Selection
     String deviceMode = getDeviceMode();
     Serial.print("Loop. Device Mode: ");
-    Serial.println(deviceMode);
+    Serial.print(deviceMode);
     if (deviceMode == "text")
     {
-      showNewData(getInput1());
+      Serial.print(", Text: ");
+      Serial.println(getText());
+      showNewData(getText());
     }
     else if (deviceMode == "date")
     {

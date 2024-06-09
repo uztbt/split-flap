@@ -66,8 +66,8 @@
 #define PARAM_DEVICEMODE "devicemode"
 #endif
 
-#ifndef PARAM_INPUT_1
-#define PARAM_INPUT_1 "input1"
+#ifndef PARAM_TEXT
+#define PARAM_TEXT "text"
 #endif
 
 #ifndef PARAM_OFFSET_UNIT_ADDR

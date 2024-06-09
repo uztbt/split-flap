@@ -6,6 +6,7 @@
 #include "utils.h"
 
 int displayState[UNITSAMOUNT];
+int offsets[UNITSAMOUNT];
 const char letters[] = {' ', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', '$', '&', '#', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', ':', '.', '-', '?', '!'};
 
 // translates char to letter position
@@ -37,7 +38,7 @@ void updateOffset(bool force)
   int address = getOffsetUpdateUnitAddr();
   int offset = getOffsetUpdateOffset();
 
-  int currentOffset = getOffset(address);
+  int currentOffset = readOffset(address);
 
   if (!force && currentOffset == offset)
   {
@@ -57,6 +58,8 @@ void updateOffset(bool force)
   Serial.printf("Offset LSB written\n");
   int retEndTransmission = Wire.endTransmission();
   Serial.printf("EndTransmission returned: %d\n", retEndTransmission);
+  // Update offset in local array for the browser to see the change immediately
+  offsets[address] = offset;
 }
 
 // write letter position and speed in rpm to single unit
@@ -170,14 +173,46 @@ int checkIfMoving(int address)
   return active;
 }
 
-int getOffset(int address)
+int readOffset(int address)
 {
   Wire.requestFrom(address, ANSWERSIZE, 1);
   Wire.read(); // Throw away the first byte, it's the isActive byte
   int offsetMSB = Wire.read();
   int offsetLSB = Wire.read();
   int offset = (offsetMSB << 8) | offsetLSB;
+  Serial.printf("Offset at %d is %d\n", address, offset);
   return offset;
+}
+
+// readOffsets from all units
+void readOffsets()
+{
+  for (int i = 0; i < UNITSAMOUNT; i++)
+  {
+    offsets[i] = readOffset(i);
+  }
+}
+
+// returns offset from single unit
+int getOffset(int address)
+{
+  return offsets[address];
+}
+
+// returns offset from all units
+String getOffsetsInString()
+{
+  String offsetString = "[";
+  for (int i = 0; i < UNITSAMOUNT; i++)
+  {
+    offsetString += String(offsets[i]);
+    if (i < UNITSAMOUNT - 1)
+    {
+      offsetString += ",";
+    }
+  }
+  offsetString += "]";
+  return offsetString;
 }
 
 // checks if unit in display is currently moving
